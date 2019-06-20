@@ -16,10 +16,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url
-from users import views
+from users.views import ListUsersView, UserDetailView, ListGroupsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('users/', views.ListUsersView.as_view(), name='users-list'),
-    path('groups/', views.ListGroupsView.as_view(), name='groups-list'),
+    path('users/', ListUsersView.as_view(), name='users-list'),
+    path('users/<int:uid>/', UserDetailView.as_view(), name='users-detail'),
+    path('groups/', ListGroupsView.as_view(), name='groups-list'),
 ]

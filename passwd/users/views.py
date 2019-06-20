@@ -7,6 +7,11 @@ from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 
 
+all_users = []
+for usr in pwd.getpwall():
+    all_users.append()
+
+
 class ListUsersView(APIView):
     """
     List all system users
@@ -48,3 +53,8 @@ class ListGroupsView(APIView):
                            'members': group.gr_mem,
                            })
         return Response(result)
+
+
+class UserDetailView(APIView):
+    def get(self, request, uid, format=None):
+        all_users = pwd.getpwall()
