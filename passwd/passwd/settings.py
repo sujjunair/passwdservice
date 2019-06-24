@@ -123,4 +123,4 @@ STATIC_URL = '/static/'
 
 PASSWD_FILEPATH = '/etc/passwd'
 
-GRP_FILEPATH = '/etc/groupp'
+GRP_FILEPATH = '/etc/group'
