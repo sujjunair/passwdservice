@@ -74,6 +74,11 @@ class UserViewSet(ViewSet):
         except IOError:
             raise NotFound('Invalid File: {}'.format(settings.GRP_FILEPATH))
 
+        try:
+            groups = get_groups(settings.GRP_FILEPATH).values()
+        except IOError:
+            raise NotFound('Invalid File: {}'.format(settings.GRP_FILEPATH))
+
         filtered_groups = []
         for group in groups:
             if user.name in group.members:
