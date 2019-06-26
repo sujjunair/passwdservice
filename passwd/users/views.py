@@ -1,10 +1,6 @@
-import pwd
-import grp
-
 from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 
@@ -61,7 +57,7 @@ class UserViewSet(ViewSet):
         try:
             user = self.all_users[pk]
         except KeyError:
-            return Response(status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail="User not found", code=404)
 
         serializer = UserListSerializer(instance=user)
         return Response(serializer.data)
@@ -71,7 +67,7 @@ class UserViewSet(ViewSet):
         try:
             user = self.all_users[pk]
         except KeyError:
-            return Response(status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail="User not found in any groups", code=404)
 
         try:
             groups = get_groups(settings.GRP_FILEPATH).values()
@@ -108,11 +104,14 @@ class UserViewSet(ViewSet):
         if comment is not None:
             filterset = [obj for obj in filterset if obj.comment == comment]
 
+        if home is not None:
+            filterset = [obj for obj in filterset if obj.home == home]
+
         if shell is not None:
             filterset = [obj for obj in filterset if obj.shell == shell]
 
         if not filterset:
-            return Response(status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail="User not found", code=404)
 
         serializer = UserListSerializer(instance=filterset, many=True)
         return Response(serializer.data)
@@ -134,7 +133,7 @@ class GroupViewSet(ViewSet):
         try:
             group = self.all_groups[pk]
         except KeyError:
-            return Response(status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail="Group not found", code=404)
 
         serializer = GroupSerializer(instance=group)
         return Response(serializer.data)
@@ -157,7 +156,7 @@ class GroupViewSet(ViewSet):
             filterset = [obj for obj in filterset if all(member_name in obj.members for member_name in members)]
 
         if not filterset:
-            return Response(status.HTTP_404_NOT_FOUND)
+            raise NotFound(detail="Group not found", code=404)
 
         serializer = GroupSerializer(instance=filterset, many=True)
         return Response(serializer.data)

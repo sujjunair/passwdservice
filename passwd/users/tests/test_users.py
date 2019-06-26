@@ -1,5 +1,4 @@
 from unittest import mock
-import random
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
@@ -7,7 +6,6 @@ from rest_framework import status
 from rest_framework.test import APIClient
 from users.views import get_users, get_groups
 from users.serializers import UserListSerializer, GroupSerializer
-from users.system_user import SystemUser
 
 
 class UserViewSetTest(TestCase):
@@ -62,6 +60,29 @@ class UserViewSetTest(TestCase):
         serializer = UserListSerializer(instance=user)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
+
+    @mock.patch('users.views.process_pwd_file')
+    def test_user_retrieve_404(self, process_mock):
+        all_users = [{'name': '_appowner',
+                      'uid': '87',
+                      'gid': '87',
+                      'comment': 'Application Owner',
+                      'home': '/var/empty',
+                      'shell': '/usr/bin/false'},
+                     {'name': '_ard',
+                      'uid': '67',
+                      'gid': '67',
+                      'comment': 'Apple Remote Desktop',
+                      'home': '/var/empty',
+                      'shell': '/usr/bin/false'}]
+
+        process_mock.return_value = all_users
+        pk = '97'
+        url = reverse('users-detail', kwargs={'pk': pk})
+
+        response = self.client.get(url)
+        # pk does not exist, should raise 404
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
     @mock.patch('users.views.process_grp_file')
     @mock.patch('users.views.process_pwd_file')

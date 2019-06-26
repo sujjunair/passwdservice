@@ -1,5 +1,4 @@
 from unittest import mock
-import random
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
@@ -36,6 +35,7 @@ class GroupViewSetTest(TestCase):
         response = self.client.get(url)
         serializer = GroupSerializer(instance=get_groups(settings.GRP_FILEPATH).values(), many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
 
     @mock.patch('users.views.process_grp_file')
     def test_group_retrieve(self, process_mock):
