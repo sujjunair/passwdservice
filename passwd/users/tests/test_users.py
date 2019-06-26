@@ -1,6 +1,6 @@
 from unittest import mock
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -83,6 +83,7 @@ class UserViewSetTest(TestCase):
         response = self.client.get(url)
         # pk does not exist, should raise 404
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "User not found")
 
     @mock.patch('users.views.process_grp_file')
     @mock.patch('users.views.process_pwd_file')
@@ -144,6 +145,15 @@ class UserViewSetTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
+        # invalid user query
         url = '{}?name=nouser&uid=67'.format(reverse('users-query'))
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "User not found")
+
+    @override_settings(PASSWD_FILEPATH='/etc/blah')
+    def test_invalid_passwd_file(self):
+        url = reverse('users-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Invalid File: /etc/blah")

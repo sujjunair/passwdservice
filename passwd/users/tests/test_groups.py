@@ -1,6 +1,6 @@
 from unittest import mock
 from django.conf import settings
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
@@ -65,6 +65,32 @@ class GroupViewSetTest(TestCase):
         self.assertEqual(response.data, serializer.data)
 
     @mock.patch('users.views.process_grp_file')
+    def test_group_retrieve_404(self, process_mock):
+        all_groups = [{"name": "certusers",
+                       "gid": "29",
+                       "members": [
+                           "root",
+                           "_jabber",
+                           "_postfix",
+                           "_cyrus",
+                           "_calendar",
+                           "_dovecot"
+                       ],
+                       },
+                      {"name": "_postdrop",
+                       "gid": "28",
+                       "members": []
+                       }]
+        process_mock.return_value = all_groups
+        pk = '38'
+        url = reverse('groups-detail', kwargs={'pk': pk})
+
+        response = self.client.get(url)
+        # group with gid 38 doesn't exist, should raise 404
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Group not found")
+
+    @mock.patch('users.views.process_grp_file')
     def test_group_query(self, process_mock):
         all_groups = [{"name": "certusers",
                        "gid": "29",
@@ -93,3 +119,11 @@ class GroupViewSetTest(TestCase):
         response = self.client.get(url)
         # user with name blah doesn't exist, so 404
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Group not found")
+
+    @override_settings(GRP_FILEPATH='/etc/blah')
+    def test_invalid_grp_file(self):
+        url = reverse('groups-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.data['detail'], "Invalid File: /etc/blah")
