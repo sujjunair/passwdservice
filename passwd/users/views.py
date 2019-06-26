@@ -5,7 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import NotFound
 
 from users.system_user import SystemUser
-from users.serializers import UserListSerializer
+from users.serializers import UserSerializer
 
 from users.system_group import SystemGroup
 from users.serializers import GroupSerializer
@@ -50,7 +50,7 @@ class UserViewSet(ViewSet):
         """
         List all system users
         """
-        serializer = UserListSerializer(instance=self.all_users.values(), many=True)
+        serializer = UserSerializer(instance=self.all_users.values(), many=True)
         return Response(serializer.data)
 
     def retrieve(self, request, pk=None):
@@ -59,7 +59,7 @@ class UserViewSet(ViewSet):
         except KeyError:
             raise NotFound(detail="User not found", code=404)
 
-        serializer = UserListSerializer(instance=user)
+        serializer = UserSerializer(instance=user)
         return Response(serializer.data)
 
     @action(methods=['get'], detail=True)
@@ -118,7 +118,7 @@ class UserViewSet(ViewSet):
         if not filterset:
             raise NotFound(detail="User not found", code=404)
 
-        serializer = UserListSerializer(instance=filterset, many=True)
+        serializer = UserSerializer(instance=filterset, many=True)
         return Response(serializer.data)
 
 

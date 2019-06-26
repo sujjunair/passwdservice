@@ -5,7 +5,7 @@ class StringListField(serializers.ListField):
     child = serializers.CharField()
 
 
-class UserListSerializer(serializers.Serializer):
+class UserSerializer(serializers.Serializer):
     name = serializers.CharField(max_length=200)
     uid = serializers.CharField(max_length=200)
     gid = serializers.CharField(max_length=200)

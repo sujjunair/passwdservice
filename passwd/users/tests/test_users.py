@@ -5,7 +5,7 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
 from users.views import get_users, get_groups
-from users.serializers import UserListSerializer, GroupSerializer
+from users.serializers import UserSerializer, GroupSerializer
 
 
 class UserViewSetTest(TestCase):
@@ -31,7 +31,7 @@ class UserViewSetTest(TestCase):
 
         url = reverse('users-list')
         response = self.client.get(url)
-        serializer = UserListSerializer(instance=get_users(settings.PASSWD_FILEPATH).values(), many=True)
+        serializer = UserSerializer(instance=get_users(settings.PASSWD_FILEPATH).values(), many=True)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
@@ -57,7 +57,7 @@ class UserViewSetTest(TestCase):
 
         response = self.client.get(url)
         user = get_users(settings.PASSWD_FILEPATH)[pk]
-        serializer = UserListSerializer(instance=user)
+        serializer = UserSerializer(instance=user)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
@@ -140,7 +140,7 @@ class UserViewSetTest(TestCase):
         url = '{}?name=_ard&uid=67'.format(reverse('users-query'))
         response = self.client.get(url)
         user = get_users(settings.PASSWD_FILEPATH)['67']
-        serializer = UserListSerializer(instance=[user], many=True)
+        serializer = UserSerializer(instance=[user], many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
 
