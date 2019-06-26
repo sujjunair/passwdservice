@@ -2,7 +2,7 @@ def process_pwd_file(filepath):
     users = []
     with open(filepath, 'r') as f:
         for line in f:
-            data = line.split(':')
+            data = line.strip().split(':')
             if len(data) == 7:
                 users.append({'name': data[0],
                               'uid': data[2],

@@ -90,7 +90,7 @@ class UserViewSet(ViewSet):
     @action(methods=['get'], detail=False)
     def query(self, request):
         filterset = self.all_users.values()
-        username = request.query_params.get('user', None)
+        username = request.query_params.get('name', None)
         uid = request.query_params.get('uid', None)
         gid = request.query_params.get('gid', None)
         comment = request.query_params.get('comment', None)

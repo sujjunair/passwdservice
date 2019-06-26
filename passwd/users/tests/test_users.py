@@ -121,3 +121,29 @@ class UserViewSetTest(TestCase):
         groups = get_groups(settings.GRP_FILEPATH).values()
         serializer = GroupSerializer(instance=groups, many=True)
         self.assertEqual(response.data, serializer.data)
+
+    @mock.patch('users.views.process_pwd_file')
+    def test_user_query(self, process_mock):
+        all_users = [{'name': '_appowner',
+                      'uid': '87',
+                      'gid': '87',
+                      'comment': 'Application Owner',
+                      'home': '/var/empty',
+                      'shell': '/usr/bin/false'},
+                     {'name': '_ard',
+                      'uid': '67',
+                      'gid': '67',
+                      'comment': 'Apple Remote Desktop',
+                      'home': '/var/empty',
+                      'shell': '/usr/bin/false'}]
+        process_mock.return_value = all_users
+        url = '{}?name=_ard&uid=67'.format(reverse('users-query'))
+        response = self.client.get(url)
+        user = get_users(settings.PASSWD_FILEPATH)['67']
+        serializer = UserListSerializer(instance=[user], many=True)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data, serializer.data)
+
+        url = '{}?name=nouser&uid=67'.format(reverse('users-query'))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

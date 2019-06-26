@@ -17,6 +17,7 @@ Install python3 from here: https://www.python.org/downloads/
 ```
 cd passwdservice
 virtualenv -p python3 py3env
+source py3env/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -37,4 +38,9 @@ python manage.py test
 
 ## Modify passwd and grp file paths
 Go to settings.py and change ```PASSWD_FILEPATH``` and ```GRP_FILEPATH```
+Defaults are as follows:
+```
+PASSWD_FILEPATH = '/etc/passwd'
+GRP_FILEPATH = '/etc/group'
+```
 You might have to restart the local server after modifying these values.

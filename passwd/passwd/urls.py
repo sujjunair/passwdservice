@@ -16,7 +16,7 @@ Including another URLconf
 from rest_framework import routers
 from users.views import UserViewSet, GroupViewSet
 
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserViewSet, base_name='users')
 router.register(r'groups', GroupViewSet, base_name='groups')
 urlpatterns = router.urls

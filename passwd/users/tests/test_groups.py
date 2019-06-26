@@ -82,9 +82,14 @@ class GroupViewSetTest(TestCase):
                        "members": []
                        }]
         process_mock.return_value = all_groups
-        url = '{}?name=certusers'.format(reverse('groups-query'))
+        url = '{}?name=certusers&gid=29'.format(reverse('groups-query'))
         response = self.client.get(url)
         group = get_groups(settings.GRP_FILEPATH)['29']
         serializer = GroupSerializer(instance=[group], many=True)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data, serializer.data)
+
+        url = '{}?name=blah'.format(reverse('groups-query'))
+        response = self.client.get(url)
+        # user with name blah doesn't exist, so 404
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
