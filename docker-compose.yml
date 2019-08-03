@@ -1,0 +1,39 @@
+version: '2'
+services:
+  db:
+    image: postgres
+    env_file:
+     - ./env/development.env
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  passwdservice:
+    tty: true
+    restart: always
+    build:
+        context: ./passwd
+        args:
+            env: dev
+    command: start-dev
+    env_file:
+     - ./env/development.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - /passwdservice/passwd:/app
+      - passwd-logs:/var/log/passwd
+    depends_on:
+      - db
+    logging:
+      options:
+        max-size: 1m
+
+volumes:
+  pg-data:
+    driver: local
+
+  passwd-logs:
+    driver: local
+
