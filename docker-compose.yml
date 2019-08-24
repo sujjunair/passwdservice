@@ -1,0 +1,40 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.6
+    env_file:
+     - ./env/dev.env
+    ports:
+      - "5434:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  webapp:
+    tty: true
+    restart: always
+    build:
+      context: ./webapp
+      args:
+        env: dev
+    image: passwdservice_webapp
+    command: start-webserver-dev
+    env_file:
+     - ./env/dev.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - /webapp:/app
+      - webapp-logs:/var/log/webapp
+    depends_on:
+      - db
+    logging:
+      options:
+        max-size: 100k
+
+volumes:
+  pg-data:
+    driver: local
+
+  webapp-logs:
+    driver: local
+
