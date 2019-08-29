@@ -23,7 +23,7 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - /webapp:/app
+      - ./webapp:/app
       - webapp-logs:/var/log/webapp
     depends_on:
       - db
