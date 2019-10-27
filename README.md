@@ -8,32 +8,32 @@ This service is written in django and uses the django-rest-framework for creatin
 git clone https://github.com/sujjunair/passwdservice.git
 ```
 
-### Setup python3 and virtual environment
+### Setup Docker
 
-#### Install Python3
-Install python3 from here: https://www.python.org/downloads/ 
+#### Install Docker
+Install Docker for Mac from here: https://docs.docker.com/docker-for-mac/install/
 
-#### Setup virtual env and install dependencies
+### Bring up Containers
+#### Start Containers
 ```
-cd passwdservice
-virtualenv -p python3 py3env
-source py3env/bin/activate
-pip install -r requirements.txt
+docker-compose up -d
 ```
 
-### Start Local Server
-```
-cd passwd
-python manage.py runserver
-```
 To access your local server, go to http://127.0.0.1:8000
 
 All endpoints are available as browsable APIs, so you can test endpoints using the browser.
 For instance to see list of users, go to http://127.0.0.1:8000/users
 
+#### List Containers
+To list containers, use
+```
+docker-compose ls
+```
+
+
 ## Run tests
 ```
-python manage.py test
+docker-compose exec webapp python manage.py test
 ```
 
 ## Modify passwd and grp file paths
